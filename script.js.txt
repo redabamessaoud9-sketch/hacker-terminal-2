@@ -1,0 +1,150 @@
+// =========================
+// MATRIX BACKGROUND
+// =========================
+
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
+resize();
+window.addEventListener("resize", resize);
+
+const chars = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const fontSize = 18;
+
+let columns = Math.floor(canvas.width / fontSize);
+let drops = [];
+
+function resetDrops() {
+    columns = Math.floor(canvas.width / fontSize);
+    drops = [];
+    for (let i = 0; i < columns; i++) {
+        drops.push(Math.random() * canvas.height / fontSize);
+    }
+}
+
+resetDrops();
+window.addEventListener("resize", resetDrops);
+
+function drawMatrix() {
+
+    ctx.fillStyle = "rgba(0,0,0,0.08)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#00ff00";
+    ctx.font = fontSize + "px Consolas";
+
+    for (let i = 0; i < drops.length; i++) {
+
+        const text = chars[Math.floor(Math.random() * chars.length)];
+
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.98) {
+            drops[i] = 0;
+        }
+
+        drops[i]++;
+    }
+}
+
+setInterval(drawMatrix, 35);
+
+// =========================
+// TERMINAL
+// =========================
+
+const terminal = document.getElementById("terminal");
+const bar = document.getElementById("bar");
+
+const messages = [
+
+"> Initialisation...",
+"> Vérification des modules...",
+"> Connexion établie...",
+"> Chargement des animations...",
+"> Analyse des pixels...",
+"> Synchronisation...",
+"> Compilation...",
+"> Optimisation graphique...",
+"> Téléchargement de memes...",
+"> Nettoyage terminé...",
+"> Prêt."
+
+];
+
+let index = 0;
+
+// =========================
+// BEEP
+// =========================
+
+function beep() {
+
+    try {
+
+        const audio = new AudioContext();
+
+        const osc = audio.createOscillator();
+        const gain = audio.createGain();
+
+        osc.type = "square";
+        osc.frequency.value = 700;
+
+        gain.gain.value = 0.03;
+
+        osc.connect(gain);
+        gain.connect(audio.destination);
+
+        osc.start();
+        osc.stop(audio.currentTime + 0.05);
+
+    } catch (e) {}
+
+}
+
+// =========================
+// TERMINAL ANIMATION
+// =========================
+
+function nextLine() {
+
+    if (index < messages.length) {
+
+        terminal.innerHTML += messages[index] + "<br>";
+
+        terminal.scrollTop = terminal.scrollHeight;
+
+        const progress = ((index + 1) / messages.length) * 100;
+
+        bar.style.width = progress + "%";
+
+        beep();
+
+        index++;
+
+        setTimeout(nextLine, 700);
+
+    } else {
+
+        setTimeout(() => {
+
+            terminal.innerHTML += "<br>";
+            terminal.innerHTML += "============================<br>";
+            terminal.innerHTML += "   AUCUN PIRATAGE DÉTECTÉ<br>";
+            terminal.innerHTML += "      C'ÉTAIT UNE DÉMO 😄<br>";
+            terminal.innerHTML += "============================<br>";
+
+            bar.style.width = "100%";
+
+        }, 1000);
+
+    }
+
+}
+
+nextLine();
